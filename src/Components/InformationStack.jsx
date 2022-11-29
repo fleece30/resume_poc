@@ -1,18 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import Card from "./Card";
+import { useDispatch, useSelector } from "react-redux";
+import { addGroup, addItemToGroup } from "../Redux/groups";
 
 const InformationStack = () => {
-  const [groups, setGroups] = useState([]);
+  // const [groups, setGroups] = useState([]);
+  const { groups } = useSelector((state) => state.groups);
+  const dispatch = useDispatch();
 
-  const addGroup = () => {
+  const addNewGroup = () => {
     let groupTitle = window.prompt("Enter group title");
-    setGroups([...groups, { title: groupTitle, cards: [] }]);
+    // setGroups([...groups, { title: groupTitle, cards: [] }]);
+    dispatch(addGroup({ title: groupTitle, cards: [] }));
   };
 
   return (
     <div className="flex-1 flex flex-col items-center">
       <button
-        onClick={() => addGroup()}
+        onClick={() => addNewGroup()}
         className="bg-button px-4 py-3 rounded mb-5 font-bold"
       >
         Add group
@@ -23,14 +28,7 @@ const InformationStack = () => {
             key={index}
             className="bg-black max-w-sm p-4 mb-5 flex flex-col space-y-2 text-slate-300 w-full"
             onDragOver={(e) => e.preventDefault()}
-            onDrop={() => {
-              let draggedItem = JSON.parse(localStorage.getItem("draggedItem"));
-              let newState = groups.slice();
-              newState
-                .find((stateGroup) => stateGroup.title === group.title)
-                .cards.push(draggedItem);
-              setGroups(newState);
-            }}
+            onDrop={() => dispatch(addItemToGroup(group))}
           >
             <span className="mb-2">{group.title}</span>
             {group.cards.map((card, index) => (
